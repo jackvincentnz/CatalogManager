@@ -14,7 +14,6 @@ using System.Net;
 
 namespace CatalogManager.Tests.Controllers
 {
-
     //todo: test for service calls that throw exceptions
     [TestClass]
     public class CategoryControllerTest

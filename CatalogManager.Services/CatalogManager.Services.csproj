@@ -41,13 +41,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CategoryService.cs" />
+    <Compile Include="EntityService.cs" />
     <Compile Include="ICategoryService.cs" />
+    <Compile Include="IEntityService.cs" />
+    <Compile Include="IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatalogManager.Core\CatalogManager.Core.csproj">
       <Project>{803bf1d5-cd56-4a9e-9083-8633e144a415}</Project>
       <Name>CatalogManager.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CatalogManager.Data\CatalogManager.Data.csproj">
+      <Project>{8f6d5897-c487-4a33-9b73-5b82618fe967}</Project>
+      <Name>CatalogManager.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
