@@ -292,7 +292,7 @@ namespace CatalogManager.Tests.Controllers
         }
 
         [TestMethod]
-        public void Create_Given_Valid_Model_Expect_Redirect_To_Inserted_Category()
+        public void Create_Given_Valid_Model_Expect_Redirect_To_Parent_Category()
         {
             // Arrange
             _mockProductService.Setup(x => x.Create(It.IsAny<Product>())).Returns(stubProduct);
@@ -302,8 +302,8 @@ namespace CatalogManager.Tests.Controllers
 
             // Assert
             Assert.AreEqual("Details", result.RouteValues["action"]);
-            Assert.AreEqual("Product", result.RouteValues["controller"]);
-            Assert.AreEqual(stubProduct.Id, result.RouteValues["id"]);
+            Assert.AreEqual("Category", result.RouteValues["controller"]);
+            Assert.AreEqual(stubProduct.CategoryId, result.RouteValues["id"]);
         }
 
         #endregion

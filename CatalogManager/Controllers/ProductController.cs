@@ -62,7 +62,7 @@ namespace CatalogManager.Controllers
             if (ModelState.IsValid)
             {
                 var result = _productService.Create(product);
-                return RedirectToAction("Details", "Product", new {id = result.Id });
+                return RedirectToAction("Details", "Category", new {id = result.CategoryId });
             }
             return View(product);
         }

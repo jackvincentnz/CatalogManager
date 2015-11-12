@@ -506,7 +506,7 @@ namespace CatalogManager.Tests.Controllers
         }
 
         [TestMethod]
-        public void Create_Given_Valid_Model_Expect_Redirect_To_Inserted_Category()
+        public void Create_Given_Valid_Model_Expect_Redirect_To_Catalog_If_RootCategory()
         {
             // Arrange
             _mockCategoryService.Setup(x => x.Create(It.IsAny<Category>())).Returns(stubCategory);
@@ -515,9 +515,23 @@ namespace CatalogManager.Tests.Controllers
             var result = _controller.Create(stubCategory) as RedirectToRouteResult;
 
             // Assert
+            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Catalog", result.RouteValues["controller"]);
+        }
+
+        [TestMethod]
+        public void Create_Given_Valid_Model_Expect_Redirect_To_Parent_If_SubCategory()
+        {
+            // Arrange
+            _mockCategoryService.Setup(x => x.Create(It.IsAny<Category>())).Returns(new Category {CategoryID = 1});
+
+            // Act
+            var result = _controller.Create(stubCategory) as RedirectToRouteResult;
+
+            // Assert
             Assert.AreEqual("Details", result.RouteValues["action"]);
             Assert.AreEqual("Category", result.RouteValues["controller"]);
-            Assert.AreEqual(stubCategory.Id, result.RouteValues["id"]);
+            Assert.AreEqual(1, result.RouteValues["id"]);
         }
 
         #endregion

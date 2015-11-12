@@ -60,7 +60,11 @@ namespace CatalogManager.Controllers
             if (ModelState.IsValid)
             {
                  var result = _categoryService.Create(category);
-                return RedirectToAction("Details","Category", new { id = result.Id });
+                if (result.CategoryID == null)
+                {
+                    return RedirectToAction("Index", "Catalog");
+                }
+                return RedirectToAction("Details", "Category", new { id = result.CategoryID });
             }
 
             return View(category);
