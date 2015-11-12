@@ -4,10 +4,10 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>@Model.Name</h2>
 
 <div>
-    <h4>Category</h4>
+    <h4>Details</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -60,7 +60,44 @@
 
     </dl>
 </div>
+
+<h2>Sub Categories</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", "Category", new { id=Model.Id }, null)
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Categories)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "Details", "Category", new { id = item.Id }, null)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, null) |
+                @Html.ActionLink("Delete", "Delete", "Category", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
+
+</table>
+
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @if (Model.ParentCategory != null)
+    {
+        @Html.ActionLink(string.Concat("Back to ", Model.ParentCategory.Name), "Details", new { id = Model.ParentCategory.Id })
+    }
+    else
+    {
+        @Html.ActionLink("Back to Catalog", "Index", "Catalog")
+    }
 </p>

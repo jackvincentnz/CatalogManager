@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace CatalogManager.Controllers
 {
@@ -19,7 +20,12 @@ namespace CatalogManager.Controllers
             _categoryService = categoryService;
         }
 
-        public ActionResult Index(int? id)
+        public ActionResult Index()
+        {
+            return RedirectToAction("Index", "Catalog");
+        }
+
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
@@ -33,20 +39,28 @@ namespace CatalogManager.Controllers
             return View(category);
         }
         
-        public ActionResult Create()
+        public ActionResult Create(int? id)
         {
             var model = new Category();
+            if (id != null)
+            {
+                var category = _categoryService.GetById(id.Value);
+                if (category != null)
+                {
+                    model.CategoryID = id;
+                }
+            }
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,CategoryID")] Category category)
+        public ActionResult Create([Bind(Include = "Name,CategoryID")] Category category)
         {
             if (ModelState.IsValid)
             {
                  var result = _categoryService.Create(category);
-                return RedirectToAction("Index","Category", new { id = result.Id });
+                return RedirectToAction("Details","Category", new { id = result.Id });
             }
 
             return View(category);
@@ -68,12 +82,16 @@ namespace CatalogManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,CategoryID")] Category category)
+        public ActionResult Edit([Bind(Include = "Id,Name")] Category category)
         {
             if (ModelState.IsValid)
             {
-                _categoryService.Update(category);
-                return RedirectToAction("Index");
+                // Get saved category and update name
+                var toUpdate = _categoryService.GetById(category.Id);
+                toUpdate.Name = category.Name;
+                var result = _categoryService.Update(toUpdate);
+
+                return RedirectToAction("Details", new { id = result.Id});
             }
             return View(category);
         }

@@ -20,7 +20,7 @@ namespace CatalogManager.Tests.Controllers
     {
         private Mock<ICategoryService> _mockCategoryService;
         private CategoryController _controller;
-        private Category stubCategory = new Category
+        private readonly Category stubCategory = new Category
         {
             Id = 1,
                 Name = "Computers, Tablets & eReaders",
@@ -306,22 +306,25 @@ namespace CatalogManager.Tests.Controllers
         public void Edit_Post_Action_Calls_Correct_Methods_When_Valid()
         {
             //Arrange
-            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(It.IsAny<Category>());
-            
+            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(stubCategory);
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
+
             _controller.ViewData.ModelState.Clear();
 
             //Act
             _controller.Edit(stubCategory);
 
             //Assert
-            _mockCategoryService.Verify(x => x.Update(It.IsAny<Category>()));            
+            _mockCategoryService.Verify(x => x.Update(It.IsAny<Category>()));
+            _mockCategoryService.Verify(x => x.GetById(It.IsAny<int>()));
         }
 
         [TestMethod]
         public void Edit_Post_Action_Returns_RedirectToAction_When_Valid()
         {
             //Arrange
-            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(It.IsAny<Category>());
+            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(stubCategory);
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
             _controller.ViewData.ModelState.Clear();
 
             //Act
@@ -335,15 +338,16 @@ namespace CatalogManager.Tests.Controllers
         public void Edit_Post_Action_Returns_RedirectToAction_Index_When_Valid()
         {
             //Arrange
-            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(It.IsAny<Category>());
+            _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(stubCategory);
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
             _controller.ViewData.ModelState.Clear();
 
             //Act
             var result = _controller.Edit(stubCategory) as RedirectToRouteResult;
-            var routeValue = result.RouteValues["action"];
 
             //Assert
-            Assert.AreEqual(routeValue, "Index");
+            Assert.AreEqual("Details", result.RouteValues["action"]);
+            Assert.AreEqual(stubCategory.Id, result.RouteValues["id"]);
         }
 
         #endregion
@@ -354,7 +358,7 @@ namespace CatalogManager.Tests.Controllers
         public void Create_Get_Action_Returns_ViewResult()
         {
             //Act
-            var result = _controller.Create();
+            var result = _controller.Create((int?)null);
 
             //Assert
             Assert.IsInstanceOfType(result, typeof(ViewResult));
@@ -364,12 +368,55 @@ namespace CatalogManager.Tests.Controllers
         public void Create_Get_Action_Returns_DefaultView()
         {
             //Act
-            var result = _controller.Create() as ViewResult;
+            var result = _controller.Create((int?)null) as ViewResult;
 
             //Assert
             Assert.AreEqual("", result.ViewName);
         }
 
+        [TestMethod]
+        public void Create_Get_Action_Calls_CategoryService_GetById()
+        {
+            // Arrange
+            int expectedParentId = 1;
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Verifiable();
+
+            // Act
+            _controller.Create(expectedParentId);
+
+            // Assert
+            _mockCategoryService.Verify(x => x.GetById(It.IsAny<int>()));
+        }
+
+        [TestMethod]
+        public void Create_Get_Action_Doesnt_Return_CategoryID_IfNotFound()
+        {
+            // Arrange
+            int expectedParentId = 1;
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns((Category)null);
+
+            // Act
+            var result = _controller.Create(expectedParentId) as ViewResult;
+            var model = result.Model as Category;
+            // Assert
+            Assert.IsNull(model.CategoryID);
+        }
+
+        [TestMethod]
+        public void Create_Get_Action_Returns_CategoryId_When_CategoryFound()
+        {
+            // Arrange
+            int expectedParentId = 1;
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Category {CategoryID = expectedParentId});
+
+            //Act
+            var result = _controller.Create(expectedParentId) as ViewResult;
+            var model = result.Model as Category;
+
+            //Assert
+            Assert.AreEqual(model.CategoryID, expectedParentId);
+        }
+        
         [TestMethod]
         public void Create_Post_Action_Returns_ViewResult_When_Invalid()
         {
@@ -436,9 +483,104 @@ namespace CatalogManager.Tests.Controllers
             var result = _controller.Create(stubCategory) as RedirectToRouteResult;
 
             // Assert
-            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Details", result.RouteValues["action"]);
             Assert.AreEqual("Category", result.RouteValues["controller"]);
             Assert.AreEqual(stubCategory.Id, result.RouteValues["id"]);
+        }
+
+        #endregion
+
+        #region Details Action Test
+        
+        [TestMethod]
+        public void Details_Returns_404_If_No_Category_Found()
+        {
+            //Arrange
+            // null is returned from GetById when a category is not found
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns((Category)null);
+
+            //Act
+            var result = _controller.Details(stubCategory.Id);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(HttpNotFoundResult));
+        }
+
+        [TestMethod]
+        public void Details_Returns_View_With_CategoryModel()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
+
+            //Act
+            var result = _controller.Details(stubCategory.Id) as ViewResult;
+
+            //Assert
+            Assert.IsInstanceOfType(result.Model, typeof(Category));
+        }
+
+        [TestMethod]
+        public void Details_Returns_DefaultView()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
+
+            //Act
+            var result = _controller.Details(stubCategory.Id) as ViewResult;
+
+            //Assert
+            Assert.AreEqual("", result.ViewName);
+        }
+
+        [TestMethod]
+        public void Details_Returns_ViewResult()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
+
+            //Act
+            var result = _controller.Details(stubCategory.Id);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(ViewResult));
+        }
+
+        [TestMethod]
+        public void Details_Calls_CategoryService_GetById()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Verifiable();
+
+            //Act
+            _controller.Details(stubCategory.Id);
+
+            //Assert
+            _mockCategoryService.Verify(x => x.GetById(It.IsAny<int>()));
+        }
+
+        [TestMethod]
+        public void Details_Returns_View_With_Same_Model_Data()
+        {
+            // Arrange
+            _mockCategoryService.Setup(x => x.GetById(stubCategory.Id)).Returns(stubCategory);
+
+            // Act
+            ViewResult result = _controller.Details(stubCategory.Id) as ViewResult;
+            var model = result.Model as Category;
+
+            // Assert
+            Assert.AreSame(stubCategory, model);
+        }
+
+        [TestMethod]
+        public void Details_Redirect_For_No_CategoryId()
+        {
+            // Act
+            var result = _controller.Details(null) as RedirectToRouteResult;
+
+            // Assert
+            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Catalog", result.RouteValues["controller"]);
         }
 
         #endregion
@@ -446,90 +588,10 @@ namespace CatalogManager.Tests.Controllers
         #region Index Action Tests
 
         [TestMethod]
-        public void Index_Returns_404_If_No_Category_Found()
-        {
-            //Arrange
-            // null is returned from GetById when a category is not found
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns((Category)null);
-
-            //Act
-            var result = _controller.Index(stubCategory.Id);
-
-            //Assert
-            Assert.IsInstanceOfType(result, typeof(HttpNotFoundResult));
-        }
-
-        [TestMethod]
-        public void Index_Returns_View_With_CategoryModel()
-        {
-            //Arrange
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
-            
-            //Act
-            var result = _controller.Index(stubCategory.Id) as ViewResult;
-
-            //Assert
-            Assert.IsInstanceOfType(result.Model, typeof(Category));
-        }
-
-        [TestMethod]
-        public void Index_Returns_DefaultView()
-        {
-            //Arrange
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
-
-            //Act
-            var result = _controller.Index(stubCategory.Id) as ViewResult;
-
-            //Assert
-            Assert.AreEqual("", result.ViewName);
-        }
-
-        [TestMethod]
-        public void Index_Returns_ViewResult()
-        {
-            //Arrange
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
-
-            //Act
-            var result = _controller.Index(stubCategory.Id);
-
-            //Assert
-            Assert.IsInstanceOfType(result, typeof(ViewResult));
-        }
-
-        [TestMethod]
-        public void Index_Calls_CategoryService_GetById()
-        {
-            //Arrange
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Verifiable();
-
-            //Act
-            _controller.Index(stubCategory.Id);
-
-            //Assert
-            _mockCategoryService.Verify(x => x.GetById(It.IsAny<int>()));
-        }
-
-        [TestMethod]
-        public void Index_Returns_View_With_Same_Model_Data()
-        {
-            // Arrange
-            _mockCategoryService.Setup(x => x.GetById(stubCategory.Id)).Returns(stubCategory);
-
-            // Act
-            ViewResult result = _controller.Index(stubCategory.Id) as ViewResult;
-            var model = result.Model as Category;
-
-            // Assert
-            Assert.AreSame(stubCategory, model);
-        }
-        
-        [TestMethod]
-        public void Index_Redirect_For_No_CategoryId()
+        public void Details_Redirect_To_Catalog()
         {
             // Act
-            var result = _controller.Index(null) as RedirectToRouteResult;
+            var result = _controller.Index() as RedirectToRouteResult;
 
             // Assert
             Assert.AreEqual("Index", result.RouteValues["action"]);
