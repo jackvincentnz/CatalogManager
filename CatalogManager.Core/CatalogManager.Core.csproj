@@ -77,11 +77,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuditableEntity.cs" />
+    <Compile Include="Common\AuditableEntity.cs" />
     <Compile Include="Domain\Category.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="IAuditableEntity.cs" />
-    <Compile Include="IEntity.cs" />
+    <Compile Include="Common\Entity.cs" />
+    <Compile Include="Common\IAuditableEntity.cs" />
+    <Compile Include="Common\IEntity.cs" />
     <Compile Include="Domain\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
