@@ -61,8 +61,16 @@ namespace CatalogManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = _productService.Create(product);
-                return RedirectToAction("Details", "Category", new {id = result.CategoryId });
+                try
+                {
+                    var result = _productService.Create(product);
+                    return RedirectToAction("Details", "Category", new {id = result.CategoryId});
+                }
+                catch (Exception)
+                {
+                    //Log the error
+                    ModelState.AddModelError("", "Unable to save changes. Please Try again.");
+                }
             }
             return View(product);
         }
@@ -87,17 +95,25 @@ namespace CatalogManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                var toUpdate = _productService.GetById(product.Id);
-                if (toUpdate != null)
+                try
                 {
-                    toUpdate.Name = product.Name;
-                    toUpdate.Description = product.Description;
-                    toUpdate.Price = product.Price;
-                    var result = _productService.Update(toUpdate);
+                    var toUpdate = _productService.GetById(product.Id);
+                    if (toUpdate != null)
+                    {
+                        toUpdate.Name = product.Name;
+                        toUpdate.Description = product.Description;
+                        toUpdate.Price = product.Price;
+                        var result = _productService.Update(toUpdate);
 
-                    return RedirectToAction("Details", new { id = result.Id });
+                        return RedirectToAction("Details", new {id = result.Id});
+                    }
+                    return HttpNotFound();
                 }
-                return HttpNotFound();
+                catch (Exception)
+                {
+                    //Log the error
+                    ModelState.AddModelError("", "Unable to save changes. Please Try again.");
+                }
             }
             return View(product);
         }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CatalogConfiguration.cs" />
     <Compile Include="CatalogInitializer.cs" />
     <Compile Include="CatalogManagerContext.cs" />
     <Compile Include="IDbContext.cs" />

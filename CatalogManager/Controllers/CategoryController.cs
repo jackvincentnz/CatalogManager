@@ -59,12 +59,20 @@ namespace CatalogManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                 var result = _categoryService.Create(category);
-                if (result.CategoryID == null)
+                try
                 {
-                    return RedirectToAction("Index", "Catalog");
+                    var result = _categoryService.Create(category);
+                    if (result.CategoryID == null)
+                    {
+                        return RedirectToAction("Index", "Catalog");
+                    }
+                    return RedirectToAction("Details", "Category", new { id = result.CategoryID });
                 }
-                return RedirectToAction("Details", "Category", new { id = result.CategoryID });
+                catch (Exception)
+                {
+                    //Log the error
+                    ModelState.AddModelError("", "Unable to save changes. Please Try again.");
+                }
             }
 
             return View(category);
@@ -90,16 +98,24 @@ namespace CatalogManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Get saved category and update name
-                var toUpdate = _categoryService.GetById(category.Id);
-                if (toUpdate != null)
+                try
                 {
-                    toUpdate.Name = category.Name;
-                    var result = _categoryService.Update(toUpdate);
+                    // Get saved category and update name
+                    var toUpdate = _categoryService.GetById(category.Id);
+                    if (toUpdate != null)
+                    {
+                        toUpdate.Name = category.Name;
+                        var result = _categoryService.Update(toUpdate);
 
-                    return RedirectToAction("Details", new {id = result.Id});
+                        return RedirectToAction("Details", new {id = result.Id});
+                    }
+                    return HttpNotFound();
                 }
-                return HttpNotFound();
+                catch (Exception)
+                {
+                    //Log the error
+                    ModelState.AddModelError("", "Unable to save changes. Please Try again.");
+                }
             }
             return View(category);
         }

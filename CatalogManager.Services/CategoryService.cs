@@ -27,5 +27,40 @@ namespace CatalogManager.Services
         {
             return _dbset.Where(x => x.CategoryID == null).ToList();
         }
+
+        /// <summary>
+        /// Overrides generic delete function
+        /// Required to handle deletion of self referencing entities
+        /// </summary>
+        /// <param name="entity">Category</param>
+        public override void Delete(Category entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+            var target = _dbset.FirstOrDefault(x => x.Id == entity.Id);
+            RecursiveDelete(target);
+
+            _context.SaveChanges();
+        }
+        
+        /// <summary>
+        /// Recursively deletes child categories
+        /// </summary>
+        /// <param name="parent">Category</param>
+        private void RecursiveDelete(Category parent)
+        {
+            if (parent.Categories != null)
+            {
+                var categories = _dbset.Where(x => x.CategoryID == parent.Id);
+
+                foreach (var subCat in categories)
+                {
+                    RecursiveDelete(subCat);
+                }
+            }
+            _dbset.Remove(parent);
+        }
     }
 }
