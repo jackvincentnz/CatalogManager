@@ -31,7 +31,7 @@ namespace CatalogManager.Controllers
             {
                 return RedirectToAction("Index", "Catalog");
             }
-            Category category = _categoryService.GetById(id.Value);
+            var category = _categoryService.GetById(id.Value);
             if (category == null)
             {
                 return HttpNotFound();
@@ -88,10 +88,14 @@ namespace CatalogManager.Controllers
             {
                 // Get saved category and update name
                 var toUpdate = _categoryService.GetById(category.Id);
-                toUpdate.Name = category.Name;
-                var result = _categoryService.Update(toUpdate);
+                if (toUpdate != null)
+                {
+                    toUpdate.Name = category.Name;
+                    var result = _categoryService.Update(toUpdate);
 
-                return RedirectToAction("Details", new { id = result.Id});
+                    return RedirectToAction("Details", new {id = result.Id});
+                }
+                return HttpNotFound();
             }
             return View(category);
         }
@@ -115,8 +119,12 @@ namespace CatalogManager.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = _categoryService.GetById(id);
-            _categoryService.Delete(category);
-            return RedirectToAction("Index", "Catalog");
+            if (category != null)
+            {
+                _categoryService.Delete(category);
+                return RedirectToAction("Index", "Catalog");
+            }
+            return HttpNotFound();
         }
     }
 }

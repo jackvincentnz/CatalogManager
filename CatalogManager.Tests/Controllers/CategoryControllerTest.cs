@@ -23,31 +23,33 @@ namespace CatalogManager.Tests.Controllers
         private readonly Category stubCategory = new Category
         {
             Id = 1,
-                Name = "Computers, Tablets & eReaders",
-                Categories = new List<Category>
+            Name = "Computers, Tablets & eReaders",
+            Categories = new List<Category>
+            {
+                new Category { Name = "Laptops & Ultrabooks" },
+                new Category { Name = "Tablets & iPads" },
+                new Category { Name = "MacBook, iMac & Mac Pro" },
+                new Category { Name = "Desktop Computers" },
+                new Category { Name = "Monitors" }
+            },
+            Products = new List<Product>
+            {
+                new Product
                 {
-                    new Category { Name = "Laptops & Ultrabooks" },
-                    new Category { Name = "Tablets & iPads" },
-                    new Category { Name = "MacBook, iMac & Mac Pro" },
-                    new Category { Name = "Desktop Computers" },
-                    new Category { Name = "Monitors" }
+                    Id = 1,
+                    Name = "Product A",
+                    Description = "Simple test product",
+                    Price = 12.50M
                 },
-                Products = new List<Product>
+                new Product
                 {
-                    new Product
-                    {
-                        Name = "Product A",
-                        Description = "Simple test product",
-                        Price = 12.50M
-                    },
-                    new Product
-                    {
-                        Name = "Product B",
-                        Description = "Another Simple test product",
-                        Price = 15M
-                    }
+                    Id = 2,
+                    Name = "Product B",
+                    Description = "Another Simple test product",
+                    Price = 15M
                 }
-            };
+            }
+        };
 
         [TestInitialize]
         public void TestInitialize()
@@ -133,7 +135,7 @@ namespace CatalogManager.Tests.Controllers
         {
             //Arrange
             _mockCategoryService.Setup(x => x.GetById(stubCategory.Id)).Returns(stubCategory);
-            
+
             //Act
             var result = _controller.Delete(stubCategory.Id) as ViewResult;
 
@@ -142,9 +144,23 @@ namespace CatalogManager.Tests.Controllers
         }
 
         [TestMethod]
+        public void Delete_Post_Action_Returns_404_No_Match()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns((Category)null);
+
+            //Act
+            var result = _controller.DeleteConfirmed(stubCategory.Id);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(HttpNotFoundResult));
+        }
+
+        [TestMethod]
         public void Delete_Post_Action_Calls_CategoryService_Delete()
         {
             //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
             _mockCategoryService.Setup(x => x.Delete(It.IsAny<Category>())).Verifiable();
 
             //Act
@@ -158,6 +174,7 @@ namespace CatalogManager.Tests.Controllers
         public void Delete_Post_Action_Returns_RedirectToAction()
         {
             //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
             _mockCategoryService.Setup(x => x.Delete(It.IsAny<Category>())).Verifiable();
 
             //Act
@@ -171,6 +188,7 @@ namespace CatalogManager.Tests.Controllers
         public void Delete_Post_Action_Returns_RedirectToAction_Catalog()
         {
             //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(stubCategory);
             _mockCategoryService.Setup(x => x.Delete(It.IsAny<Category>())).Verifiable();
 
             //Act
@@ -200,14 +218,14 @@ namespace CatalogManager.Tests.Controllers
         {
             //Arrange
             _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Verifiable();
-            
+
             //Act
             _controller.Edit(stubCategory.Id);
 
             //Assert
             _mockCategoryService.Verify(x => x.GetById(It.IsAny<int>()));
         }
-        
+
         [TestMethod]
         public void Edit_Get_Action_Returns_ViewResult_If_Category_Found()
         {
@@ -335,7 +353,21 @@ namespace CatalogManager.Tests.Controllers
         }
 
         [TestMethod]
-        public void Edit_Post_Action_Returns_RedirectToAction_Index_When_Valid()
+        public void Edit_Post_Action_Returns_404_When_No_Match()
+        {
+            //Arrange
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns((Category)null);
+            _controller.ViewData.ModelState.Clear();
+
+            //Act
+            var result = _controller.Edit(stubCategory);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(HttpNotFoundResult));
+        }
+
+        [TestMethod]
+        public void Edit_Post_Action_Returns_RedirectToAction_Index_When_Valid_And_Matched()
         {
             //Arrange
             _mockCategoryService.Setup(x => x.Update(It.IsAny<Category>())).Returns(stubCategory);
@@ -349,7 +381,7 @@ namespace CatalogManager.Tests.Controllers
             Assert.AreEqual("Details", result.RouteValues["action"]);
             Assert.AreEqual(stubCategory.Id, result.RouteValues["id"]);
         }
-
+        
         #endregion
 
         #region Create Action Tests
@@ -407,7 +439,7 @@ namespace CatalogManager.Tests.Controllers
         {
             // Arrange
             int expectedParentId = 1;
-            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Category {CategoryID = expectedParentId});
+            _mockCategoryService.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Category { CategoryID = expectedParentId });
 
             //Act
             var result = _controller.Create(expectedParentId) as ViewResult;
@@ -416,7 +448,7 @@ namespace CatalogManager.Tests.Controllers
             //Assert
             Assert.AreEqual(model.CategoryID, expectedParentId);
         }
-        
+
         [TestMethod]
         public void Create_Post_Action_Returns_ViewResult_When_Invalid()
         {
@@ -472,7 +504,7 @@ namespace CatalogManager.Tests.Controllers
             //Assert
             _mockCategoryService.Verify(x => x.Create(It.IsAny<Category>()));
         }
-        
+
         [TestMethod]
         public void Create_Given_Valid_Model_Expect_Redirect_To_Inserted_Category()
         {
@@ -491,7 +523,7 @@ namespace CatalogManager.Tests.Controllers
         #endregion
 
         #region Details Action Test
-        
+
         [TestMethod]
         public void Details_Returns_404_If_No_Category_Found()
         {
@@ -588,7 +620,7 @@ namespace CatalogManager.Tests.Controllers
         #region Index Action Tests
 
         [TestMethod]
-        public void Details_Redirect_To_Catalog()
+        public void Index_Redirect_To_Catalog()
         {
             // Act
             var result = _controller.Index() as RedirectToRouteResult;
