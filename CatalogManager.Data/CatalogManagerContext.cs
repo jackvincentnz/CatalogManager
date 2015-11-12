@@ -39,7 +39,7 @@ namespace CatalogManager.Data
                 if (entity != null)
                 {
                     const string identityName = "System";
-                    DateTime now = DateTime.UtcNow;
+                    DateTime now = DateTime.Now;
 
                     if (entry.State == EntityState.Added)
                     {

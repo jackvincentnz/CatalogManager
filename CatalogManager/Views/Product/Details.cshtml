@@ -1,82 +1,30 @@
-﻿@model CatalogManager.Model.Product
+﻿@model CatalogManager.Core.Domain.Product
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2><a href="@string.Concat("/Category/Details/", Model.CategoryId)"><i class="fa fa-level-up"></i></a> @Model.Name</h2>
+<p>
+    <i class="fa fa-pencil"></i> @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    <i class="fa fa-ban"></i> @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
+</p>
 
 <div>
-    <h4>Product</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedBy)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedBy)
-        </dd>
-
-        <dt>
-            Category
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-
+        <dt>Category</dt>
+        <dd>@Html.ActionLink(Model.Category.Name, "Details", "Category", new { id = Model.CategoryId }, null)</dd>
+        <dt>Description</dt>
+        <dd>@Model.Description</dd>
+        <dt>Price</dt>
+        <dd>@Html.DisplayFor(model => model.Price)</dd>
+        <dt>Created</dt>
+        <dd>@Html.DisplayFor(model => model.CreatedDate)</dd>
+        <dt>Updated</dt>
+        <dd>@Html.DisplayFor(model => model.UpdatedDate)</dd>
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Category", "Details", "Category", new { id = Model.CategoryId }, null)
 </p>

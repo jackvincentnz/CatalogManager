@@ -2,102 +2,86 @@
 
 @{
     ViewBag.Title = "Details";
+    var backLink = Model.CategoryID != null ? string.Concat("/Category/Details/", Model.CategoryID) : "/Catalog";
 }
 
-<h2>@Model.Name</h2>
+<h2><a href="@backLink"><i class="fa fa-level-up"></i></a> @Model.Name</h2>
+<p>
+    <i class="fa fa-pencil"></i> @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    <i class="fa fa-ban"></i> @Html.ActionLink("Delete", "Delete", new { id = Model.Id }) |
+    <i class="fa fa-plus"></i> @Html.ActionLink("Add Sub-Category", "Create", "Category", new { id = Model.Id }, null) |
+    <i class="fa fa-plus"></i> @Html.ActionLink("Add Product", "Create", "Product", new { id = Model.Id }, null)
+</p>
 
 <div>
-    <h4>Details</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            Parent Category
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ParentCategory.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedBy)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedBy)
-        </dd>
-
+        @if (Model.ParentCategory != null)
+        {
+            <dt>Parent Category</dt>
+            <dd>@Html.ActionLink(Model.ParentCategory.Name, "Details", "Category", new { id = Model.CategoryID }, null)</dd>
+        }
+        <dt>Created</dt>
+        <dd>@Html.DisplayFor(model => model.CreatedDate)</dd>
+        <dt>Updated</dt>
+        <dd>@Html.DisplayFor(model => model.UpdatedDate)</dd>
     </dl>
 </div>
 
-<h2>Sub Categories</h2>
+@if (Model.Categories.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Sub-Categories
+                </th>
+                <th></th>
+            </tr>
+        </thead>
 
-<p>
-    @Html.ActionLink("Create New", "Create", "Category", new { id=Model.Id }, null)
-</p>
+        @foreach (var item in Model.Categories)
+        {
+            <tr>
+                <td>
+                    <i class="fa fa-tags"></i> @Html.ActionLink(item.Name, "Details", "Category", new { id = item.Id }, new { Title = "Details" })
+                </td>
+                <td>
+                    <i class="fa fa-bars"></i> @Html.ActionLink("Details", "Details", "Category", new { id = item.Id }, new { Title = "Details" }) |
+                    <i class="fa fa-pencil"></i> @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, null) |
+                    <i class="fa fa-ban"></i> @Html.ActionLink("Delete", "Delete", "Category", new { id = item.Id }, null)
+                </td>
+            </tr>
+        }
 
-<table class="table">
-    <tr>
-        <th>
-            Name
-        </th>
-        <th></th>
-    </tr>
+    </table>
+}
 
-    @foreach (var item in Model.Categories)
-    {
-        <tr>
-            <td>
-                @Html.ActionLink(item.Name, "Details", "Category", new { id = item.Id }, null)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, null) |
-                @Html.ActionLink("Delete", "Delete", "Category", new { id = item.Id }, null)
-            </td>
-        </tr>
-    }
+@if (Model.Products.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Products
+                </th>
+                <th></th>
+            </tr>
+        </thead>
 
-</table>
+        @foreach (var item in Model.Products)
+        {
+            <tr>
+                <td>
+                    <i class="fa fa-tags"></i> @Html.ActionLink(item.Name, "Details", "Product", new { id = item.Id }, new { Title = "Details" })
+                </td>
+                <td>
+                    <i class="fa fa-bars"></i> @Html.ActionLink("Details", "Details", "Product", new { id = item.Id }, new { Title = "Details" }) |
+                    <i class="fa fa-pencil"></i> @Html.ActionLink("Edit", "Edit", "Product", new {id = item.Id}, null) |
+                    <i class="fa fa-ban"></i> @Html.ActionLink("Delete", "Delete", "Product", new {id = item.Id}, null)
+                </td>
+            </tr>
+        }
 
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @if (Model.ParentCategory != null)
-    {
-        @Html.ActionLink(string.Concat("Back to ", Model.ParentCategory.Name), "Details", new { id = Model.ParentCategory.Id })
-    }
-    else
-    {
-        @Html.ActionLink("Back to Catalog", "Index", "Catalog")
-    }
-</p>
+    </table>
+}

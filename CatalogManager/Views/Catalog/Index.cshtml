@@ -7,26 +7,21 @@
 <h2>Categories</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create", "Category")
+    <i class="fa fa-plus"></i> @Html.ActionLink("Add Category", "Create", "Category")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            Name
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model.Categories) {
-    <tr>
-        <td>
-            @Html.ActionLink(item.Name, "Details", "Category", new {id = item.Id}, null)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, null) |
-            @Html.ActionLink("Delete", "Delete", "Category", new { id = item.Id }, null)
-        </td>
-    </tr>
-}
+<table class="table table-striped table-hover">
+    @foreach (var item in Model.Categories)
+    {
+        <tr>
+            <td>
+                <i class="fa fa-tags"></i> @Html.ActionLink(item.Name, "Details", "Category", new { id = item.Id }, new { Title = "View Sub-Categories & Products" })
+            </td>
+            <td>
+                <i class="fa fa-bars"></i> @Html.ActionLink("Details", "Details", "Category", new { id = item.Id }, new { Title = "Details" }) |
+                <i class="fa fa-pencil"></i> @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, null) |
+                <i class="fa fa-ban"></i> @Html.ActionLink("Delete", "Delete", "Category", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
 
 </table>

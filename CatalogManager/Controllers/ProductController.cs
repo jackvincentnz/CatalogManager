@@ -83,7 +83,7 @@ namespace CatalogManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Product product)
+        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace CatalogManager.Controllers
                     toUpdate.Name = product.Name;
                     toUpdate.Description = product.Description;
                     toUpdate.Price = product.Price;
-                    var result = _productService.Update(product);
+                    var result = _productService.Update(toUpdate);
 
                     return RedirectToAction("Details", new { id = result.Id });
                 }
