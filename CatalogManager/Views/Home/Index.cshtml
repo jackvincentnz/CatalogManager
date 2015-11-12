@@ -1,31 +1,45 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Home";
 }
 
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <h1>Best Buy Catalog Manager</h1>
+    <p class="lead">Example catalog manager developed for candidate technical assessment.</p>
+    <p>Developed by <a href="http://nz.linkedin.com/in/jlvincent" target="_blank">Jack Vincent</a></p>
 </div>
 
 <div class="row">
     <div class="col-md-4">
-        <h2>Getting started</h2>
+        <h2>Question</h2>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            Create a web application called “Catalog manager” which allows users to manage
+            and maintain a Best Buy e-commerce product catalog.
+            The catalog contains a hierarchy of categories which products can be assigned to.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        <p>
+            Category contains a name, other child categories, and a collection of products.
+            A product contains a name, description and price.
+        </p>
+            Users should be able to create, update, and delete categories as well as create,
+            update, and delete products under each category.
+        </p>
     </div>
     <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        <h2>Assumptions</h2>
+        <p>Design assumptions made:</p>
+        <ul>
+            <li>Products can belong to only one category.</li>
+            <li>Products can't exist without a category.</li>
+            <li>Categories can have only one parent category.</li>
+        </ul>
     </div>
     <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        <h2>Technologies Used</h2>
+        <p>Brief summary of technologies used in solution:</p>
+        <ul>
+            <li>MVC 5</li>
+            <li>Entity Framework 6</li>
+            <li>Bootstrap</li>
+        </ul>
     </div>
 </div>

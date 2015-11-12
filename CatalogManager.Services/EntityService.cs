@@ -2,6 +2,7 @@
 using CatalogManager.Data;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,23 +11,27 @@ namespace CatalogManager.Services
 {
     public abstract class EntityService<T> : IEntityService<T> where T : BaseEntity
     {
-        IUnitOfWork _unitOfWork;
-        IRepository<T> _repository;
+        protected IDbContext _context;
+        protected IDbSet<T> _dbset;
 
-        public EntityService(IUnitOfWork unitOfWork, IRepository<T> repository)
+        public EntityService(IDbContext context)
         {
-            _unitOfWork = unitOfWork;
-            _repository = repository;
+            _context = context;
+            _dbset = _context.Set<T>();
         }
 
-        public T GetById(object id)
+        public virtual T GetById(object id)
         {
-            return _repository.GetById(id);
+            if (id == null)
+            {
+                throw new ArgumentNullException("id");
+            }
+            return _dbset.Find(id);
         }
 
-        public IEnumerable<T> GetAll()
+        public virtual IEnumerable<T> GetAll()
         {
-            return _repository.GetAll();
+            return _dbset.AsEnumerable();
         }
 
         public virtual T Create(T entity)
@@ -35,30 +40,30 @@ namespace CatalogManager.Services
             {
                 throw new ArgumentNullException("entity");
             }
-            var result = _repository.Add(entity);
-            _unitOfWork.Commit();
+            var result = _dbset.Add(entity);
+            _context.SaveChanges();
             return result;
         }
 
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-            _repository.Delete(entity);
-            _unitOfWork.Commit();
+            _dbset.Remove(entity);
+            _context.SaveChanges();
         }
         
-        public T Update(T entity)
+        public virtual T Update(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-           var result = _repository.Update(entity);
-            _unitOfWork.Commit();
-            return result;
+            _context.Entry(entity).State = EntityState.Modified;
+            _context.SaveChanges();
+            return entity;
         }
     }
 }

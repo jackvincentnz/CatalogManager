@@ -10,14 +10,13 @@ namespace CatalogManager.Services
 {
     public class CategoryService : EntityService<Category>, ICategoryService
     {
-        IUnitOfWork _unitOfWork;
-        ICategoryRepository _categoryRepository;
+        private IDbContext _context;
 
-        public CategoryService(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
-            : base(unitOfWork, categoryRepository)
+        public CategoryService(IDbContext context)
+            : base(context)
         {
-            _unitOfWork = unitOfWork;
-            _categoryRepository = categoryRepository;
+            _context = context;
+            _dbset = _context.Set<Category>();
         }
 
         /// <summary>
@@ -26,8 +25,7 @@ namespace CatalogManager.Services
         /// <returns>Categories</returns>
         public List<Category> GetCatalogCategories()
         {
-            var categories = _categoryRepository.FindBy(x => x.CategoryID == null);
-            return categories?.ToList();
+            return _dbset.Where(x => x.CategoryID == null).ToList();
         }
     }
 }
