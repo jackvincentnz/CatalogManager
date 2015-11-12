@@ -27,6 +27,10 @@ namespace CatalogManager.Data
             base.OnModelCreating(modelBuilder);
         }
 
+        /// <summary>
+        /// Overrides default save to automatically set create and update properties
+        /// </summary>
+        /// <returns>Number of entities updated</returns>
         public override int SaveChanges()
         {
             var modifiedEntries = ChangeTracker.Entries()

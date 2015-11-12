@@ -20,6 +20,7 @@
             Category contains a name, other child categories, and a collection of products.
             A product contains a name, description and price.
         </p>
+        <p>
             Users should be able to create, update, and delete categories as well as create,
             update, and delete products under each category.
         </p>
@@ -37,11 +38,22 @@
         <ul>
             <li>MVC 5</li>
             <li>Entity Framework 6</li>
+            <li>AutoFac</li>
             <li>Bootstrap</li>
+            <li>SQL Server Local Db</li>
         </ul>
     </div>
     <div class="col-md-4">
         <h2>Notes</h2>
-        
+        <p>Improvement Areas:</p>
+        <ul>
+            <li>Could have further abstracted the data access layer by implementing the repository and unit of work patterns.</li>
+            <li>Shortcuts used by keeping the same domain objects throughout. A better approach is to have separate view models, domain and data objects, linking them with property mappers.</li>
+            <li>Async functions & controllers.</li>
+            <li>More unit testing of Service Layer.</li>
+            <li>Improved exception handling and logging of all requests.</li>
+            <li>Improve domain validation. (negative prices, max-lengths etc.)</li>
+            <li>Provide ability to move products/categories to other categories when editing.</li>
+        </ul>
     </div>
 </div>

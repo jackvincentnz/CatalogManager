@@ -1,14 +1,7 @@
-﻿using CatalogManager.Models;
-using CatalogManager.Services;
+﻿using CatalogManager.Services;
 using CatalogManager.Core.Domain;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 
 namespace CatalogManager.Controllers
 {

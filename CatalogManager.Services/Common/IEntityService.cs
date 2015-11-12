@@ -7,6 +7,11 @@ using CatalogManager.Core;
 
 namespace CatalogManager.Services
 {
+    /// <summary>
+    /// Generic Entity Service Class
+    /// Can be extended and overridden to provide additional functionality.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IEntityService<T> : IService
         where T : BaseEntity
     {
